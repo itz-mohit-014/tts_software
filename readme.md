@@ -1,3 +1,19 @@
+Set up 
+
+create venv and setup dependency for auth service
+```
+python -m venv venv
+venv\Script\activate
+pip install -r requirements.server.txt 
+```
+
+install dependency for tts ....
+
+```
+venv\Script\activate
+pip install -r requirements.tts.txt 
+```
+
 ## Login Credentials
 
 ```
