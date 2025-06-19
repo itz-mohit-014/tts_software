@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { Upload, File, Loader2, CheckCircle, X } from "lucide-react"
+import { Upload, File, Loader2, CheckCircle, X, ArrowLeft, ReceiptRussianRuble } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useTheme } from "next-themes"
+import { Input } from "@/components/ui/input"
+import axios from "axios"
 
 interface UploadedFile {
   name: string
@@ -24,6 +27,11 @@ export function DatasetPreparationTab() {
   const [preparationProgress, setPreparationProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
+  const {theme} = useTheme();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showBox, setShowBox] = useState(false);
+  const [newModelName, setNewModelName] = useState("")
 
   const acceptedFileTypes = ".zip,.wav,.txt,.mp3,.flac"
 
@@ -31,96 +39,162 @@ export function DatasetPreparationTab() {
     fileInputRef.current?.click()
   }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (!files || files.length === 0) return
+const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const files = event.target.files
+  if (!files || files.length === 0) return
 
-    setIsUploading(true)
+  setIsUploading(true)
 
-    // Simulate file upload
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
 
-      // Check file type
-      const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
-      if (!acceptedFileTypes.includes(fileExtension)) {
-        toast({
-          title: "Invalid file type",
-          description: `${file.name} is not a supported file type.`,
-          variant: "destructive",
-        })
-        continue
-      }
-
-      // Simulate upload delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const uploadedFile: UploadedFile = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        path: `/uploads/${file.name}`,
-      }
-
-      setUploadedFiles((prev) => [...prev, uploadedFile])
+    // Validate file type
+    const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
+    if (!acceptedFileTypes.includes(fileExtension)) {
+      toast({
+        title: "Invalid file type",
+        description: `${file.name} is not a supported file type.`,
+        variant: "destructive",
+      })
+      continue
     }
 
-    setIsUploading(false)
-    toast({
-      title: "Files uploaded successfully",
-      description: `${files.length} file(s) have been uploaded.`,
-    })
+    // Simulate upload delay
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+    const uploadedFile: UploadedFile = {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      path: URL.createObjectURL(file), // <- Browser-safe preview path
     }
+
+    setUploadedFiles((prev) => [...prev, uploadedFile])
   }
+
+  setIsUploading(false)
+
+  toast({
+    title: "Files uploaded successfully",
+    description: `${files.length} file(s) have been uploaded.`,
+  })
+
+  setShowBox(true)
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = ""
+  }
+}
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleStartPreparation = async () => {
-    if (uploadedFiles.length === 0) {
-      toast({
-        title: "No files to prepare",
-        description: "Please upload some files first.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsPreparing(true)
-    setPreparationProgress(0)
-
-    // Simulate preparation process
-    const steps = [
-      "Extracting files...",
-      "Validating audio files...",
-      "Normalizing audio levels...",
-      "Generating transcriptions...",
-      "Creating training manifest...",
-      "Splitting dataset...",
-      "Finalizing preparation...",
-    ]
-
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      setPreparationProgress(((i + 1) / steps.length) * 100)
-
-      toast({
-        title: "Preparation Progress",
-        description: steps[i],
-      })
-    }
-
-    setIsPreparing(false)
+const handleStartPreparation = async () => {
+  if (uploadedFiles.length === 0) {
     toast({
-      title: "Dataset preparation complete",
-      description: "Your dataset is ready for training!",
-    })
+      title: "No files to prepare",
+      description: "Please upload some files first.",
+      variant: "destructive",
+    });
+    return;
   }
+
+  setIsPreparing(true);
+  setPreparationProgress(0);
+
+  const token = localStorage.getItem("token");
+  const modelName = newModelName.trim();
+
+  console.log(token)
+  console.log(modelName)
+
+  if (!token || !modelName) {
+    toast({
+      title: "Missing Info",
+      description: "Token or model name is missing.",
+      variant: "destructive",
+    });
+    setIsPreparing(false);
+    return;
+  }
+
+  const steps = [
+    "Extracting audio files...",
+    "Checking sample rates...",
+    "Cleaning up noise...",
+    "Transcribing with Whisper...",
+    "Splitting into segments...",
+    "Saving WAV chunks...",
+    "Creating metadata...",
+    "Shuffling dataset...",
+    "Splitting train/val...",
+    "Finalizing manifest files...",
+  ];
+
+  let isComplete = false;
+  let progress = 0;
+
+  console.log(uploadedFiles);
+  return;
+
+  // --- Begin actual fetch in background ---
+  const fetchPromise = fetch("http://localhost:8000/api/tts/process-dataset", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name: modelName, audio_folder : uploadedFiles }),
+  })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Dataset processing failed");
+      isComplete = true;
+      return data;
+    })
+    .catch((err: any) => {
+      isComplete = true;
+      throw err;
+    });
+
+  // --- Progress Loop ---
+  let stepIndex = 0;
+
+  const loopProgress = async () => {
+    while (!isComplete) {
+      toast({
+        title: "Preparing Dataset...",
+        description: steps[stepIndex],
+      });
+
+      progress = Math.min(progress + 6, 95);
+      setPreparationProgress(progress);
+
+      await new Promise((resolve) => setTimeout(resolve, 1800)); // 1.8s per step
+      stepIndex = (stepIndex + 1) % steps.length;
+    }
+  };
+
+  // --- Run progress loop and wait for fetch ---
+  try {
+    await Promise.all([loopProgress(), fetchPromise]);
+
+    setPreparationProgress(100);
+    toast({
+      title: "✅ Dataset Ready",
+      description: `Model "${modelName}" is ready for training.`,
+    });
+  } catch (err: any) {
+    toast({
+      title: "Error",
+      description: err.message || "Something went wrong during dataset preparation.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsPreparing(false);
+  }
+};
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes"
@@ -128,6 +202,142 @@ export function DatasetPreparationTab() {
     const sizes = ["Bytes", "KB", "MB", "GB"]
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const handleClosePopup = () => {
+    setShowBox(false);
+    setUploadedFiles([])
+  }
+
+const handleCreateDirectory = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  if (!newModelName.trim()) {
+    toast({
+      title: "Missing Model Name",
+      description: "Please enter your model name.",
+      variant: "destructive",
+    });
+    setIsLoading(false);
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    toast({
+      title: "Unauthorized",
+      description: "You are not logged in.",
+      variant: "destructive",
+    });
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      "http://localhost:8000/api/tts/createNewModelDir",
+      {
+        name: newModelName.trim(),
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.status === 200) {
+      toast({
+        title: "Directory Created",
+        description: `Folder '${newModelName.trim()}' created successfully.`,
+      });
+      setShowBox(false);
+    } else {
+      toast({
+        title: "Failed to Create Folder",
+        description: res.data?.detail || "Something went wrong.",
+        variant: "destructive",
+      });
+    }
+  } catch (err: any) {
+    const message =
+      err.response?.data?.detail || "Unable to create folder. Please try again.";
+    toast({
+      title: "Error",
+      description: message,
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  
+  if(showBox){
+    return <div className="flex items-center justify-center h-full">
+
+    <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <p className="text-muted-foreground italic text-sm">
+              Exclusively for Nikhil's Team
+            </p>
+            <div className="p-3 bg-primary rounded-full">
+             
+            {
+              theme === "dark" ? (
+                <img src={"/logo_dark_small.jpg"} className="h-11 w-12" />
+              ) : (
+                <img src={"/logo_light_small.jpg"} className="h-11 w-12" />
+              )
+            }
+            </div>
+               <p className="text-muted-foreground italic text-sm mt-2">
+              Exclusively for Nikhil's Team
+            </p>
+          </div>
+          <CardTitle className="text-2xl font-bold">
+            Enter Model Name
+          </CardTitle>
+          <CardDescription>
+            Nikhil TTS model...
+          </CardDescription>
+
+           <p className="text-muted-foreground italic text-xl">
+            Exclusively for Nikhil's Team
+          </p>
+          
+        </CardHeader>
+        <CardContent>
+        
+          <form onSubmit={handleCreateDirectory} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="otp">New Model Name</Label>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="Enter New Model Name..."
+                  value={newModelName}
+                  onChange={(e) => setNewModelName(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading || !newModelName}>
+                {isLoading ? "Creating..." : "Folder created"}
+              </Button>
+            </form>
+
+          <div className="mt-4">
+            <Button type="button" variant="ghost" className="w-full" onClick={handleClosePopup}>
+              Close
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+          </div>
   }
 
   return (

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, Mic } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import axios from "axios"
+import { useTheme } from "next-themes"
 
 interface ForgotPasswordFormProps {
   onBack: () => void
@@ -24,6 +25,7 @@ export function ForgotPasswordForm({ onBack, onSuccess }: ForgotPasswordFormProp
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const {theme} = useTheme()
 
 const handleEmailSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -174,8 +176,13 @@ const handlePasswordReset = async (e: React.FormEvent) => {
               Exclusively for Nikhil's Team
             </p>
             <div className="p-3 bg-primary rounded-full">
-              <Mic className="h-8 w-8 text-primary-foreground" />
-            </div>
+ {
+              theme === "dark" ? (
+                <img src={"/logo_dark_small.jpg"} className="h-11 w-12" />
+              ) : (
+                <img src={"/logo_light_small.jpg"} className="h-11 w-12" />
+              )
+            }            </div>
                <p className="text-muted-foreground italic text-sm mt-2">
               Exclusively for Nikhil's Team
             </p>

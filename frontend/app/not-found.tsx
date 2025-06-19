@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Home, ArrowLeft, Mic, Search } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export default function NotFound() {
   const [mounted, setMounted] = useState(false);
+  const {theme} = useTheme()
 
   useEffect(() => {
     setMounted(true);
@@ -77,7 +79,13 @@ export default function NotFound() {
                     fill="hsl(var(--primary))"
                     opacity="0.8"
                   />
-                  <Mic className="w-6 h-6" x="74" y="54" />
+                   {
+              theme === "dark" ? (
+                <img src={"/logo_dark_small.jpg"} className="h-11 w-12" />
+              ) : (
+                <img src={"/logo_light_small.jpg"} className="h-11 w-12" />
+              )
+            }
                 </g>
 
                 {/* Floating search icon */}

@@ -102,7 +102,6 @@ export function LoginForm({ onLogin }: LoginFormProps) {
                 <img src={"/logo_light_small.jpg"} className="h-11 w-12" />
               )
             }
-            <img />
           </div>
             <p className="text-muted-foreground italic text-sm mt-2">
               Exclusively for Nikhil's Team

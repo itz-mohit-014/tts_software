@@ -17,6 +17,7 @@ import { Eye, EyeOff, User, Mail, Lock, Save, Edit, Mic, ArrowLeft } from "lucid
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { headers } from "next/headers";
+import { useTheme } from "next-themes";
 
 interface UserProfile {
   firstName: string;
@@ -34,6 +35,7 @@ export function ProfileTab() {
   const [isLoading, setIsLoading] = useState(false);
   const [otp, setOtp] = useState("")
   const { toast } = useToast();
+  const {theme} = useTheme()
   const [showOtpBOx, setShowOtpBOx] = useState(false);
 
   const fetchUserData = async (userId: string, token: string) => {
@@ -212,7 +214,13 @@ const handleOtpSubmit = async (e: React.FormEvent) => {
               Exclusively for Nikhil's Team
             </p>
             <div className="p-3 bg-primary rounded-full">
-              <Mic className="h-8 w-8 text-primary-foreground" />
+              {
+              theme === "dark" ? (
+                <img src={"/logo_dark_small.jpg"} className="h-11 w-12" />
+              ) : (
+                <img src={"/logo_light_small.jpg"} className="h-11 w-12" />
+              )
+            }
             </div>
                <p className="text-muted-foreground italic text-sm mt-2">
               Exclusively for Nikhil's Team
