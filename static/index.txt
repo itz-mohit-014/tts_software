@@ -1,0 +1,20 @@
+1:"$Sreact.fragment"
+2:I[9304,["823","static/chunks/823-e3705a9fb6042d62.js","230","static/chunks/230-652131772004a916.js","72","static/chunks/72-1b677a0b59659330.js","177","static/chunks/app/layout-276952a2ee861e2c.js"],"ThemeProvider"]
+3:I[7555,[],""]
+4:I[1295,[],""]
+5:I[1024,["823","static/chunks/823-e3705a9fb6042d62.js","461","static/chunks/461-8911c88277faa1e7.js","345","static/chunks/app/not-found-c741c323b8445309.js"],"default"]
+6:I[5038,["823","static/chunks/823-e3705a9fb6042d62.js","230","static/chunks/230-652131772004a916.js","72","static/chunks/72-1b677a0b59659330.js","177","static/chunks/app/layout-276952a2ee861e2c.js"],"Toaster"]
+7:I[894,[],"ClientPageRoot"]
+8:I[1496,["823","static/chunks/823-e3705a9fb6042d62.js","230","static/chunks/230-652131772004a916.js","153","static/chunks/153-4295d1d7754e6e5c.js","974","static/chunks/app/page-698912038b675b67.js"],"default"]
+b:I[9665,[],"OutletBoundary"]
+e:I[9665,[],"ViewportBoundary"]
+10:I[9665,[],"MetadataBoundary"]
+12:I[6614,[],""]
+:HL["/_next/static/css/38e15046488e828e.css","style"]
+0:{"P":null,"b":"C-Vw7abqilzixfytNwmmv","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/38e15046488e828e.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","suppressHydrationWarning":true,"children":["$","body",null,{"className":"__className_e8ce0c","children":["$","$L2",null,{"attribute":"class","defaultTheme":"system","enableSystem":true,"disableTransitionOnChange":true,"children":[["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L5",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$L6",null,{}]]}]}]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L7",null,{"Component":"$8","searchParams":{},"params":{},"promises":["$@9","$@a"]}],"$undefined",null,["$","$Lb",null,{"children":["$Lc","$Ld",null]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","rrRGYSgLbgoMJwGdHYcml",{"children":[["$","$Le",null,{"children":"$Lf"}],null]}],["$","$L10",null,{"children":"$L11"}]]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
+9:{}
+a:{}
+f:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+c:null
+d:null
+11:[["$","title","0",{"children":"TTS Dashboard"}],["$","meta","1",{"name":"description","content":"Text-to-Speech Software Dashboard"}],["$","meta","2",{"name":"generator","content":"v0.dev"}]]
