@@ -16,7 +16,7 @@ from pathlib import Path
 from app.core.token_store import token_blacklist
 
 # Import routers
-from app.api import auth
+from app.api import auth, tts
 from app.db.mongo import otp_collection  
 from app.core.config import JWT_ALGORITHM, JWT_SECRET
 
@@ -105,7 +105,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(auth.auth_router, prefix="/api/auth", tags=["auth"])
-# app.include_router(tts.tts_router, prefix="/api/tts", tags=["tts"])
+app.include_router(tts.tts_router, prefix="/api/tts", tags=["tts"])
 # app.include_router(websocket.websocket_router, tags=["websocket"])
 
 
